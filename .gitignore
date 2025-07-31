@@ -1,0 +1,32 @@
+# This is the content for your new .gitignore file.
+# It tells Git to ignore dependency folders, environment files, and system files.
+
+# Dependencies
+/node_modules
+/backend/node_modules
+/frontend/node_modules
+
+# Production
+/build
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs and system files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
