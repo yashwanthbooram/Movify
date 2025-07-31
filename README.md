@@ -1,4 +1,4 @@
-Movify 
+** Movify 
 A place to find and journal your next favorite film.
 
 Movify is a modern, full-stack web application built with the MERN stack, designed to be a personal movie journal and discovery platform. Inspired by services like Letterboxd, it allows users to search for movies, add them to a personal journal, write reviews, and get personalized recommendations.
