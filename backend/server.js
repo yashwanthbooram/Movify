@@ -7,7 +7,16 @@ require('dotenv').config();
 // --- 1. INITIAL SETUP ---
 const app = express();
 const port = process.env.PORT || 5000;
-app.use(cors());
+
+// --- THIS IS THE CRITICAL FIX ---
+// We are telling our server to only accept requests from our live Vercel URL.
+const corsOptions = {
+  origin: 'https://movify05.vercel.app',
+  optionsSuccessStatus: 200 
+};
+app.use(cors(corsOptions));
+// --- END OF FIX ---
+
 app.use(express.json());
 
 // --- 2. DATABASE CONNECTION ---
@@ -19,8 +28,10 @@ mongoose.connect(uri)
 // --- 3. DATABASE MODELS (SCHEMAS) ---
 const movieSchema = new mongoose.Schema({ tmdbId: { type: String, required: true, unique: true }, title: { type: String, required: true }, year: { type: Number, required: true }, runtime: { type: Number }, genres: [{ type: String }], poster: { type: String, required: true }, backdrop: { type: String }, synopsis: { type: String, required: true }, reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }] }, { timestamps: true });
 const Movie = mongoose.model('Movie', movieSchema);
+
 const reviewSchema = new mongoose.Schema({ movieId: { type: mongoose.Schema.Types.ObjectId, ref: 'Movie', required: true }, userId: { type: String, required: true }, username: { type: String, required: true }, rating: { type: Number, required: true }, comment: { type: String, required: true }, }, { timestamps: true });
 const Review = mongoose.model('Review', reviewSchema);
+
 const userSchema = new mongoose.Schema({ username: { type: String, required: true, unique: true, trim: true, minlength: 3 }, email: { type: String, required: true, unique: true, trim: true }, firebaseUid: { type: String, required: true, unique: true } }, { timestamps: true });
 const User = mongoose.model('User', userSchema);
 
@@ -55,8 +66,6 @@ app.post('/reviews/add', (req, res) => { const { movieId, userId, username, rati
 app.get('/reviews/:movieId', (req, res) => { Review.find({ movieId: req.params.movieId }).then(r => res.json(r)).catch(e => res.status(400).json(e)); });
 
 app.post('/users/register', (req, res) => { const { username, email, firebaseUid } = req.body; const newUser = new User({ username, email, firebaseUid }); newUser.save().then(() => res.json('User registered!')).catch(err => res.status(400).json('Error: ' + err)); });
-
-// --- NEW ROUTE TO FIND USER BY USERNAME ---
 app.get('/users/find-by-username/:username', async (req, res) => {
     try {
         const user = await User.findOne({ username: req.params.username });
