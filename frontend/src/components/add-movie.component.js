@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import axios from 'axios';
+import API from '../api';
 import MovieGrid from './MovieGrid';
 
 const AddMovie = () => {
@@ -12,7 +12,7 @@ const AddMovie = () => {
         if (!query.trim()) return;
         setLoading(true);
         setError(null);
-        axios.get(`http://localhost:5000/api/tmdb/search?query=${query}`)
+        API.get(`/api/tmdb/search?query=${query}`)
             .then(response => setResults(response.data))
             .catch(err => setError("Search failed. Please try again."))
             .finally(() => setLoading(false));
@@ -39,4 +39,3 @@ const AddMovie = () => {
     );
 };
 export default AddMovie;
-

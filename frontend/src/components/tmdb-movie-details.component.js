@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock } from 'lucide-react';
 
@@ -12,35 +12,24 @@ const TmdbMovieDetails = () => {
 
     useEffect(() => {
         setLoading(true);
-        axios.get(`http://localhost:5000/api/tmdb/movie/${tmdbId}`)
-            .then(response => {
-                setMovie(response.data);
-            })
+        API.get(`/api/tmdb/movie/${tmdbId}`)
+            .then(response => setMovie(response.data))
             .catch(error => console.error("Error fetching TMDB details:", error))
             .finally(() => setLoading(false));
     }, [tmdbId]);
 
     const handleAddMovie = () => {
         setIsAdding(true);
-        axios.post('http://localhost:5000/movies/add', { tmdbId: movie.id })
-            .then(res => {
-                // If the movie already exists, the backend sends the existing movie object.
-                // We navigate to its detail page.
-                navigate(`/movie/${res.data.movie._id}`);
-            })
+        API.post('/movies/add', { tmdbId: movie.id })
+            .then(res => navigate(`/movie/${res.data.movie._id}`))
             .catch(err => {
                 alert(err.response?.data?.message || 'Could not add this movie.');
                 setIsAdding(false);
             });
     };
     
-    if (loading) {
-        return <div className="text-center">Loading Details...</div>;
-    }
-
-    if (!movie) {
-        return <div className="text-center text-danger">Could not load movie details.</div>;
-    }
+    if (loading) return <div className="text-center">Loading Details...</div>;
+    if (!movie) return <div className="text-center text-danger">Could not load movie details.</div>;
     
     const formatRuntime = (minutes) => {
         if (!minutes) return 'N/A';
@@ -83,5 +72,4 @@ const TmdbMovieDetails = () => {
         </div>
     );
 };
-
 export default TmdbMovieDetails;

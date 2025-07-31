@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';
 import MovieGrid from './MovieGrid';
 
 const Upcoming = () => {
@@ -9,13 +9,12 @@ const Upcoming = () => {
 
     useEffect(() => {
         setLoading(true);
-        axios.get('http://localhost:5000/api/tmdb/upcoming')
+        API.get('/api/tmdb/upcoming')
             .then(response => {
                 setMovies(response.data);
                 setError(null);
             })
             .catch(error => {
-                console.error("Error fetching upcoming movies:", error);
                 setError("Could not load upcoming movies. Please try again later.");
             })
             .finally(() => setLoading(false));
@@ -32,4 +31,3 @@ const Upcoming = () => {
     );
 };
 export default Upcoming;
-

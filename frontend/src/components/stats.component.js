@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import API from '../api';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Clock, Film, Star } from 'lucide-react';
 
@@ -9,12 +9,11 @@ const Stats = ({ user }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/movies/')
+        API.get('/movies/')
             .then(response => {
                 setMovies(response.data);
             })
             .catch(err => {
-                console.error("Error fetching movies for stats:", err);
                 setError("Could not load your movie data.");
             })
             .finally(() => setLoading(false));
@@ -63,4 +62,3 @@ const Stats = ({ user }) => {
     );
 };
 export default Stats;
-

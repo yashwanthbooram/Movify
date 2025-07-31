@@ -1,54 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, Star, Trash2 } from 'lucide-react';
 
 const MovieDetails = ({ user, username }) => {
     const [movie, setMovie] = useState(null);
-    // We no longer need a separate 'reviews' state, as it will be part of the 'movie' object.
     const { id } = useParams();
     const navigate = useNavigate();
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
 
-    // This function now only needs to fetch the movie, as reviews are included by the backend.
-    const fetchMovie = () => {
-        axios.get(`http://localhost:5000/movies/${id}`)
-            .then(res => {
-                setMovie(res.data);
-            })
-            .catch(err => {
-                console.error("Error fetching movie, it may have been deleted.", err);
-                navigate('/'); // If movie not found, redirect to home
-            });
+    const fetchMovieAndReviews = () => {
+        API.get(`/movies/${id}`)
+            .then(res => setMovie(res.data))
+            .catch(err => navigate('/'));
     };
 
-    useEffect(() => {
-        fetchMovie();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id, navigate]); // Rerun when the ID in the URL changes
+    useEffect(fetchMovieAndReviews, [id, navigate]);
 
     const onReviewSubmit = (e) => {
         e.preventDefault();
         if (!user) return;
         const newReview = { movieId: id, userId: user.uid, username: username || 'Guest', rating, comment };
-        axios.post('http://localhost:5000/reviews/add', newReview).then(() => {
+        API.post('/reviews/add', newReview).then(() => {
             setRating(5);
             setComment('');
-            fetchMovie(); // Refetch the movie to get the updated review list
+            fetchMovieAndReviews();
         });
     };
 
     const handleDeleteMovie = () => {
         if (window.confirm("Are you sure you want to delete this movie from your journal?")) {
-            axios.delete(`http://localhost:5000/movies/${id}`)
-                .then(response => {
-                    console.log(response.data.message);
-                    navigate('/');
-                })
-                .catch(error => {
-                    alert("Failed to delete movie. Please try again.");
-                });
+            API.delete(`/movies/${id}`)
+                .then(response => navigate('/'))
+                .catch(error => alert("Failed to delete movie. Please try again."));
         }
     };
     
@@ -91,12 +76,10 @@ const MovieDetails = ({ user, username }) => {
                         </div>
                     </div>
                 </div>
-                
                 <div className="row">
                     <div className="col-lg-7">
                         <h4 className="mb-3">Reviews</h4>
-                        {/* We now map over movie.reviews directly */}
-                        {movie.reviews && movie.reviews.length > 0 ? (
+                        {movie.reviews.length > 0 ? (
                             movie.reviews.map((review, index) => (
                                 <div className="card mb-3 slide-up" key={review._id} style={{animationDelay: `${index * 0.05}s`}}>
                                     <div className="card-body">

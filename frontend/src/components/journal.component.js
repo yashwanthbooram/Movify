@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';
 import { Link } from 'react-router-dom';
 import MovieGrid from './MovieGrid';
 
@@ -8,7 +8,7 @@ const Journal = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/movies/')
+        API.get('/movies/')
             .then(response => setMovies(response.data))
             .catch((error) => console.log(error))
             .finally(() => setLoading(false));
@@ -32,4 +32,3 @@ const Journal = () => {
     );
 };
 export default Journal;
-

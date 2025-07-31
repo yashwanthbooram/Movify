@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import API from '../api';
 import MovieGrid from './MovieGrid';
 
 const Discover = () => {
@@ -20,7 +20,7 @@ const Discover = () => {
         for (let i = currentYear; i >= 1950; i--) { yearList.push(i); }
         setYears(yearList);
 
-        axios.get('http://localhost:5000/api/tmdb/genres')
+        API.get('/api/tmdb/genres')
             .then(response => {
                 if (Array.isArray(response.data)) {
                     setGenres(response.data);
@@ -32,7 +32,7 @@ const Discover = () => {
     const fetchDiscoverMovies = useCallback(() => {
         setLoading(true);
         setError(null);
-        axios.get(`http://localhost:5000/api/tmdb/discover`, { params: { with_genres: selectedGenre, primary_release_year: selectedYear, with_original_language: selectedLanguage } })
+        API.get(`/api/tmdb/discover`, { params: { with_genres: selectedGenre, primary_release_year: selectedYear, with_original_language: selectedLanguage } })
             .then(response => setMovies(response.data))
             .catch(err => setError("Could not load movies. Please try again."))
             .finally(() => setLoading(false));
@@ -59,4 +59,3 @@ const Discover = () => {
     );
 };
 export default Discover;
-

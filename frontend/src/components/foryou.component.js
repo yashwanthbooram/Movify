@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import API from '../api';
 import MovieGrid from './MovieGrid';
 
 const ForYou = () => {
@@ -13,7 +13,7 @@ const ForYou = () => {
     const moods = [ { key: 'happy', name: 'Happy & Uplifting' }, { key: 'sad', name: 'Sad & Dramatic' }, { key: 'adventurous', name: 'Action & Adventure' }, { key: 'thrilling', name: 'Thrilling & Suspenseful' }, { key: 'thoughtful', name: 'Thought-Provoking' } ];
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/tmdb/genres')
+        API.get('/api/tmdb/genres')
             .then(response => {
                 if (Array.isArray(response.data)) {
                     setGenres(response.data);
@@ -26,7 +26,7 @@ const ForYou = () => {
         if (!selectedMood && !selectedGenre) { setMovies([]); return; }
         setLoading(true);
         setError(null);
-        axios.get(`http://localhost:5000/api/tmdb/discover`, { params: { mood: selectedMood, with_genres: selectedGenre } })
+        API.get(`/api/tmdb/discover`, { params: { mood: selectedMood, with_genres: selectedGenre } })
             .then(response => setMovies(response.data))
             .catch(err => setError("Could not find recommendations. Please try different options."))
             .finally(() => setLoading(false));
@@ -58,4 +58,3 @@ const ForYou = () => {
     );
 };
 export default ForYou;
-

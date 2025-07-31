@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';
 import MovieGrid from './MovieGrid';
 
 const Trending = () => {
@@ -9,13 +9,12 @@ const Trending = () => {
 
     useEffect(() => {
         setLoading(true);
-        axios.get('http://localhost:5000/api/tmdb/trending')
+        API.get('/api/tmdb/trending')
             .then(response => {
                 setMovies(response.data);
                 setError(null);
             })
             .catch(error => {
-                console.error("Error fetching trending movies:", error);
                 setError("Could not load trending movies. Please try again later.");
             })
             .finally(() => setLoading(false));
@@ -32,4 +31,3 @@ const Trending = () => {
     );
 };
 export default Trending;
-
